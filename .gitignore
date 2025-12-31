@@ -1,0 +1,55 @@
+# Terraform directories & files
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+.terraform.lock.hcl
+
+# Secrets & local config
+*.tfvars
+*.tfvars.json
+.env
+.env.*
+secrets.*
+credentials.*
+
+# Security & scan outputs
+gitleaks-report.*
+semgrep-report.*
+checkov-report.*
+tfsec-report.*
+trivy-report.*
+opa-report.*
+
+# Docker
+docker-compose.override.yml
+
+
+# Logs
+*.log
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# AWS local files
+.aws/
+
+
+# Terraform plan artifacts
+*.tfplan
+
+# Temp / backup files
+*~
+*.bak
+*.swp
+
+# Node / tooling (future use)
+node_modules/
+npm-debug.log*
+
+# AI / security cache (future)
+.ai/
+.security-cache/
