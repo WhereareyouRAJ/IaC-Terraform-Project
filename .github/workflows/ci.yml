@@ -45,6 +45,7 @@ jobs:
           args: >
             --sarif
             --output=semgrep-results.sarif
+            --metrics=off
       
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
