@@ -11,7 +11,7 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] 
+  owners = ["099720109477"]
 }
 
 module "vpc" {
@@ -19,7 +19,7 @@ module "vpc" {
   vpc_cidr_block      = "10.0.0.0/16"
   subnet_1_cidr_block = "10.0.1.0/24"
   subnet_2_cidr_block = "10.0.2.0/24"
-  
+
 }
 
 module "eks" {
@@ -37,7 +37,7 @@ module "sonar" {
   key_name           = "YCamp-key"
   security_group_ids = [aws_security_group.app_sg.id]
   volume_size        = 30
-  vpc_id = module.vpc.vpc_id
+  vpc_id             = module.vpc.vpc_id
 }
 
 module "server" {
@@ -48,14 +48,14 @@ module "server" {
   key_name           = "YCamp-key"
   security_group_ids = [aws_security_group.app_sg.id]
   volume_size        = 20
-  vpc_id = module.vpc.vpc_id
+  vpc_id             = module.vpc.vpc_id
 
 }
 
 resource "aws_security_group" "app_sg" {
   name        = "app-sg"
   description = "Security group for application server"
-  vpc_id      = module.vpc.vpc_id   
+  vpc_id      = module.vpc.vpc_id
 
   # SSH
   ingress {
@@ -68,7 +68,7 @@ resource "aws_security_group" "app_sg" {
 
   # HTTP
   ingress {
-    description = "HTTP access"
+    description = "ALLOWHTTP access"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -77,7 +77,7 @@ resource "aws_security_group" "app_sg" {
 
   # HTTPS
   ingress {
-    description = "HTTPS access"
+    description = "ALLOW HTTPS access"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -140,10 +140,11 @@ resource "aws_security_group" "app_sg" {
 
   # OUTBOUND (default – allow all)
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   tags = {
