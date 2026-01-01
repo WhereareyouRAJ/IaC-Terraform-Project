@@ -65,7 +65,7 @@ resource "aws_eks_node_group" "eks_1_nodes" {
   }
   remote_access {
     ec2_ssh_key = "YCamp-key"
-    security_group_ids = [aws_security_group.node_sg.id]
+    source_security_group_ids = [aws_security_group.node_sg.id]
   }
   
   depends_on = [
@@ -105,3 +105,17 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEC2ContainerRegistryRea
   role       = aws_iam_role.nodegroup_role.name
 }
 
+resource "aws_security_group" "node_sg" {
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["223.237.8.75/32"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["223.237.8.75/32"]
+  }
+}
