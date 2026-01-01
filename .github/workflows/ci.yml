@@ -37,18 +37,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Run Semgrep Scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: "p/ci"
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+      
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
         with:
           sarif_file: semgrep-results.sarif
 
-      - name: Run Semgrep Scan
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: "p/ci"
-          sarif_output: "semgrep-results.sarif"
-
+      
+ 
       
   
   terraform-ci: 
@@ -114,7 +117,7 @@ jobs:
           directory: ${{ env.DIR }}
           output_format: cli,sarif
           output_file_path: console,results.sarif
-          soft_fail: "true"
+        
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
