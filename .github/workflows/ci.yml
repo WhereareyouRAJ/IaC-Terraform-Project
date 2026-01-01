@@ -41,8 +41,8 @@ jobs:
         uses: semgrep/semgrep-action@v1
         with:
           config: "p/ci"
-          output_format: cli,sarif
-          output_file_path: console,results.sarif
+          generateSarif: true
+          sarifFile: semgrep-results.sarif
       
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
