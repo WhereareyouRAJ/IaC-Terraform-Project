@@ -202,10 +202,11 @@ jobs:
     - name: Generate Infracost diff
       run: |
         cd environments/dev
-        terraform init -backend=false
+        
         infracost breakdown --path . \
           --format table \
           --out-file cost-estimate.txt
+    
     - name: Output cost estimate
       run: cat environments/dev/cost-estimate.txt
   
