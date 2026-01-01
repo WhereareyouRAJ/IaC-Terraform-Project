@@ -1,0 +1,185 @@
+name: terraform-ci
+
+permissions:
+  contents: read
+  security-events: write
+
+
+on: 
+  push: 
+    branches:
+      - dev
+      - staging
+      - main
+  pull_request:
+    branches:
+      - dev
+      - staging
+      - main
+jobs: 
+  gitleaks-scan:
+    runs-on: ubuntu-latest    
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Create temp dir
+        run: mkdir -p tmp
+
+      - name: git-leaks setup
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --exit-code 1
+
+  semgrep-scan:
+    runs-on: ubuntu-latest
+    needs: gitleaks-scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep Scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: "p/ci"
+          sarif_output: "semgrep-results.sarif"
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: success() || failure()
+        with:
+          sarif_file: semgrep-results.sarif
+  
+  terraform-ci: 
+    runs-on: ubuntu-latest
+    needs: gitleaks-scan
+    steps: 
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup terraform 
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.6.6"
+
+    - name: Setup environment folder
+      run: |
+        if [[ "$GITHUB_REF_NAME" == "dev" ]]; then 
+          echo "DIR=environments/dev" >> $GITHUB_ENV
+        elif [[ "$GITHUB_REF_NAME" = "staging" ]]; then 
+          echo "DIR=environments/staging" >> $GITHUB_ENV
+        else 
+          echo "DIR=environments/prod" >> $GITHUB_ENV
+        fi
+
+
+    - name: Terraform init
+      run: |
+        cd $DIR 
+        terraform init -input=false
+
+    - name: Terraform Format
+      run: | 
+        cd $DIR
+        terraform fmt 
+    
+    - name: Terraform validate
+      run: |
+        cd $DIR
+        terraform validate
+    
+
+  checkov: 
+    name: Checkov Scan
+    runs-on: ubuntu-latest 
+    needs: terraform-ci
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+
+      - name: Setup environment folder
+        run: |
+          if [[ "$GITHUB_REF_NAME" = "dev" ]]; then 
+            echo "DIR=environments/dev" >> $GITHUB_ENV
+          elif [[ "$GITHUB_REF_NAME" = "staging" ]]; then 
+            echo "DIR=environments/staging" >> $GITHUB_ENV
+          else 
+            echo "DIR=environments/prod" >> $GITHUB_ENV
+          fi
+      - name: Checkov GitHub Action
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: ${{ env.DIR }}
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+          soft_fail: "true"
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: success() || failure()
+        with:
+          sarif_file: results.sarif
+          
+  tfsec:
+    name: tfsec
+    runs-on: ubuntu-latest
+    needs: checkov
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup terraform 
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+      
+      - name: Setup environment folder
+        run: |
+          if [[ "$GITHUB_REF_NAME" = "dev" ]]; then 
+            echo "DIR=environments/dev" >> $GITHUB_ENV
+          elif [[ "$GITHUB_REF_NAME" = "staging" ]]; then 
+            echo "DIR=environments/staging" >> $GITHUB_ENV
+          else 
+            echo "DIR=environments/prod" >> $GITHUB_ENV
+          fi
+
+      
+      - name: Terraform security scan
+        uses: aquasecurity/tfsec-action@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        with:
+          working_directory: ${{ env.DIR }}
+          soft_fail: true
+  
+  terraform-plan:
+    runs-on: ubuntu-latest
+    needs: tfsec
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.6.6"
+
+    - name: Set environment folder
+      run: |
+        if [[ "$GITHUB_REF_NAME" == "dev" ]]; then
+          echo "DIR=environments/dev" >> $GITHUB_ENV
+        elif [[ "$GITHUB_REF_NAME" == "staging" ]]; then
+          echo "DIR=environments/staging" >> $GITHUB_ENV
+        else
+          echo "DIR=environments/prod" >> $GITHUB_ENV
+        fi
+
+    - name: Terraform Init
+      run: |
+        cd $DIR
+        terraform init -input=false
+
+    - name: Terraform Plan
+      run: |
+        cd $DIR
+        terraform plan -out=tfplan
+   
