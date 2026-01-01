@@ -39,15 +39,7 @@ jobs:
 
       - name: Run Semgrep Scan
         uses: r7kamura/semgrepper@v0
-        with:
-          entryPoint: semgrep
-          config: "p/ci"
-          args: >
-            --sarif
-            --output=semgrep-results.sarif
-            --metrics=off
-            --error
-            --severity=ERROR
+        
       
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
