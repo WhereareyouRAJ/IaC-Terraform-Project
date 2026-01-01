@@ -152,3 +152,27 @@ resource "aws_security_group" "app_sg" {
   }
 }
 
+resource "aws_security_group" "cluster_sg" {
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["223.237.8.75/32"]
+  }
+}
+
+resource "aws_security_group" "node_sg" {
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["223.237.8.75/32"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["223.237.8.75/32"]
+  }
+}
