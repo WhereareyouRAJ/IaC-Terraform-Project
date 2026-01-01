@@ -63,7 +63,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # HTTP
@@ -72,7 +72,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # HTTPS
@@ -81,7 +81,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # SMTPS
@@ -135,7 +135,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 3000
     to_port     = 10000
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # OUTBOUND (default – allow all)
