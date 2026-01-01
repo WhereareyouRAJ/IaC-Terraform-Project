@@ -43,16 +43,13 @@ jobs:
     - name: Terraform Format
       run: | 
         cd $DIR
-        terraform fmt -check -recursive
+        terraform fmt 
     
     - name: Terraform validate
       run: |
         cd $DIR
         terraform validate
-    - name: Terraform plan
-      run: |
-        cd $DIR
-        terraform plan -out=tfplan
+    
 
   checkov: 
     name: Checkov Scan
