@@ -66,28 +66,8 @@ resource "aws_route_table_association" "b" {
   route_table_id = aws_route_table.argo_route_table.id
 }
 
-resource "aws_security_group" "cluster_sg" {
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
 
-resource "aws_security_group" "node_sg" {
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+
+
 
