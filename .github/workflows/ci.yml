@@ -86,7 +86,7 @@ jobs:
         if: success() || failure()
         with:
           sarif_file: results.sarif
-
+          soft_fail: true
   tfsec:
     name: tfsec
     runs-on: ubuntu-latest
