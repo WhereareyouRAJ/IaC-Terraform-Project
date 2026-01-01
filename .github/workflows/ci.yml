@@ -193,21 +193,19 @@ jobs:
       run: |
         cd $DIR
         terraform plan -out=tfplan
+    
+    - name: Run Infracost
+      uses: infracost/actions/setup@v2
+      with:
+        api-key: ${{ secrets.INFRACOST_API_KEY }}
 
-
-  AWSCostPredict:
-    runs-on: ubuntu-latest
-    needs: terraform-plan
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-        
-      - name: Predict cost
-        uses: salim8898/AWS-Cost-Predictor@v1.0.0
-        with:
-          iac_path: environments/dev    # path of IAC folder in your repo
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+    - name: Generate Infracost diff
+      run: |
+        cd environments/dev
+        terraform init -backend=false
+        infracost breakdown --path . \
+          --format table \
+          --out-file cost-estimate.txt
+    - name: Output cost estimate
+      run: cat environments/dev/cost-estimate.txt
+  
