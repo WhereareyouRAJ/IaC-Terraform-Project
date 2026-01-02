@@ -72,17 +72,17 @@ jobs:
 
     - name: Terraform init
       run: |
-        cd $DIR 
+        cd environments/dev 
         terraform init -input=false
 
     - name: Terraform Format
       run: | 
-        cd $DIR
+        cd environments/dev
         terraform fmt 
     
     - name: Terraform validate
       run: |
-        cd $DIR
+        cd environments/dev
         terraform validate
     
 
@@ -107,7 +107,7 @@ jobs:
       - name: Checkov GitHub Action
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: ${{ env.DIR }}
+          directory: environments/dev
           output_format: cli,sarif
           output_file_path: console,results.sarif
           soft_fail: true
@@ -147,7 +147,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
-          working_directory: ${{ env.DIR }}
+          working_directory: environments/dev
           soft_fail: true
   
   terraform-plan:
@@ -186,12 +186,12 @@ jobs:
 
     - name: Terraform Init
       run: |
-        cd $DIR
+        cd environments/dev
         terraform init -input=false
 
     - name: Terraform Plan
       run: |
-        cd $DIR
+        cd environments/dev
         terraform plan -out=tfplan
     
     - name: Run Infracost
