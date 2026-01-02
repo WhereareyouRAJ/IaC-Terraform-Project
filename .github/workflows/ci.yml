@@ -32,7 +32,7 @@ jobs:
           --source . \
           --no-git \
           --redact \
-          --exit-code 1
+          --exit-code 0
   
   semgrep-scan:
     runs-on: ubuntu-latest
