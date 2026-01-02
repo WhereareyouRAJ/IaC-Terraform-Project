@@ -4,15 +4,17 @@ resource "aws_eks_cluster" "eks_1" {
   access_config {
     authentication_mode = "API"
   }
-
+  
   role_arn = aws_iam_role.cluster.arn
   version  = "1.34"
 
   vpc_config {
     subnet_ids = var.subnet_ids 
-
+    endpoint_public_access = false
+    security_group_ids = [aws_security_group.cluster_sg.id]
   }
-
+  
+  enabled_cluster_log_types = ["api", "audit", "authenticator","controllerManager","scheduler"]
   
   depends_on = [
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
@@ -50,7 +52,7 @@ resource "aws_eks_node_group" "eks_1_nodes" {
   node_group_name = "eks-argocd-nodes"
   node_role_arn   = aws_iam_role.nodegroup_role.arn
   subnet_ids      = var.subnet_ids
-
+  
   scaling_config {
     desired_size = 1
     max_size     = 2
@@ -63,6 +65,7 @@ resource "aws_eks_node_group" "eks_1_nodes" {
   }
   remote_access {
     ec2_ssh_key = "YCamp-key"
+    source_security_group_ids = [aws_security_group.node_sg.id]
   }
   
   depends_on = [
@@ -102,3 +105,27 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEC2ContainerRegistryRea
   role       = aws_iam_role.nodegroup_role.name
 }
 
+resource "aws_security_group" "node_sg" {
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["223.237.8.75/32"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["223.237.8.75/32"]
+  }
+}
+
+resource "aws_security_group" "cluster_sg" {
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["223.237.8.75/32"]
+  }
+}
