@@ -1,9 +1,8 @@
 provider "aws" {
   region                      = "ap-south-1"
-  skip_credentials_validation = true
-  skip_requesting_account_id  = true
-  access_key                  = "mock_access_key"
-  secret_key                  = "mock_secret_key"
+  
+  access_key                  = ${{ secrets.AWS_ACCESS_KEY_ID }}
+  secret_key                  = ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 }
 
 resource "aws_instance" "my_web_app" {
