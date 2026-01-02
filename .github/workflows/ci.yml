@@ -11,11 +11,13 @@ on:
       - dev
       - staging
       - main
+      - infracost_1
   pull_request:
     branches:
       - dev
       - staging
       - main
+      - infracost_1
 jobs: 
   gitleaks-scan:
     runs-on: ubuntu-latest    
