@@ -6,14 +6,19 @@ resource "aws_eks_cluster" "eks_1" {
   }
   
   role_arn = aws_iam_role.cluster.arn
-  version  = "1.34"
+  version  = "1.32"
 
   vpc_config {
     subnet_ids = var.subnet_ids 
     endpoint_public_access = false
     security_group_ids = [aws_security_group.cluster_sg.id]
   }
-  
+  encryption_config {
+    resources = ["secrets"]
+    provider {
+      key_arn = aws_kms_key.eks_secrets.arn
+    }
+  }
   enabled_cluster_log_types = ["api", "audit", "authenticator","controllerManager","scheduler"]
   
   depends_on = [
@@ -107,12 +112,14 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEC2ContainerRegistryRea
 
 resource "aws_security_group" "node_sg" {
   ingress {
+    description = "EKS Node SSH Access"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["223.237.8.75/32"]
   }
   egress {
+    description = "EKS Node Internet Access"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -128,4 +135,36 @@ resource "aws_security_group" "cluster_sg" {
     protocol    = "-1"
     cidr_blocks = ["223.237.8.75/32"]
   }
+}
+
+resource "aws_kms_key" "eks_secrets" {
+  description             = "KMS key for EKS Secrets Encryption"
+  enable_key_rotation     = true
+  deletion_window_in_days = 7
+}
+
+resource "aws_kms_alias" "eks_secrets_alias" {
+  name          = "alias/eks-secrets-encryption"
+  target_key_id = aws_kms_key.eks_secrets.key_id
+}
+
+
+resource "aws_iam_role_policy" "eks_kms_access" {
+  role = var.cluster_role_name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:DescribeKey",
+          "kms:GenerateDataKey*"
+        ]
+        Resource = aws_kms_key.eks_secrets.arn
+      }
+    ]
+  })
 }

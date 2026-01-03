@@ -26,6 +26,7 @@ module "eks" {
   source     = "../../modules/eks"
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.subnet_ids
+  cluster_role_name = "eks-cluster-kms-role-dev"
 }
 
 
@@ -149,6 +150,26 @@ resource "aws_security_group" "app_sg" {
 
   tags = {
     Name = "app-sg"
+  }
+}
+
+
+
+resource "aws_default_security_group" "default" {
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    protocol  = "-1"
+    self      = true
+    from_port = 0
+    to_port   = 0
+  }
+
+  egress {
+    from_port   = 0
+   to_port     = 0
+    protocol    = "-1"
+   cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
