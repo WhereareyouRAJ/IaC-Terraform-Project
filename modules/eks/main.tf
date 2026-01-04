@@ -111,6 +111,7 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEC2ContainerRegistryRea
 }
 
 resource "aws_security_group" "node_sg" {
+  description = "SG For Nodes"
   ingress {
     description = "EKS Node SSH Access"
     from_port   = 0
@@ -128,8 +129,10 @@ resource "aws_security_group" "node_sg" {
 }
 
 resource "aws_security_group" "cluster_sg" {
+  description = "SG For Cluster"
 
   egress {
+    description = "EKS Cluster Internet Access"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -137,11 +140,50 @@ resource "aws_security_group" "cluster_sg" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
+
 resource "aws_kms_key" "eks_secrets" {
   description             = "KMS key for EKS Secrets Encryption"
   enable_key_rotation     = true
   deletion_window_in_days = 7
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+
+      # ✅ Account root – admin access
+      {
+        Sid    = "AllowAccountRoot"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+
+      # ✅ EKS cluster role – secrets encryption
+      {
+        Sid    = "AllowEKSClusterUse"
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_iam_role.cluster.arn
+        }
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 }
+
+
 
 resource "aws_kms_alias" "eks_secrets_alias" {
   name          = "alias/eks-secrets-encryption"

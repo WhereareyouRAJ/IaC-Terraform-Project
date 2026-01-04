@@ -5,7 +5,7 @@ resource "aws_instance" "sonar" {
   key_name      = var.key_name 
   iam_instance_profile = "test"
   vpc_security_group_ids = var.security_group_ids
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   root_block_device {
     volume_size = var.volume_size
     volume_type = "gp3"
