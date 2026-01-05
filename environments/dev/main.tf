@@ -26,6 +26,7 @@ module "eks" {
   source     = "../../modules/eks"
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.subnet_ids
+  cluster_role_name = "eks-cluster-kms-role-dev"
 }
 
 
@@ -90,7 +91,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 465
     to_port     = 465
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # SMTP
@@ -99,7 +100,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 25
     to_port     = 25
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # SMTP Submission
@@ -108,7 +109,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 587
     to_port     = 587
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # MongoDB
@@ -117,7 +118,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 27017
     to_port     = 27017
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # Custom TCP 6443 (K8s API / custom app)
@@ -126,7 +127,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # Custom TCP Range
@@ -149,6 +150,26 @@ resource "aws_security_group" "app_sg" {
 
   tags = {
     Name = "app-sg"
+  }
+}
+
+
+
+resource "aws_default_security_group" "default" {
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    protocol  = "-1"
+    self      = true
+    from_port = 0
+    to_port   = 0
+  }
+
+  egress {
+    from_port   = 0
+   to_port     = 0
+    protocol    = "-1"
+   cidr_blocks = ["0.0.0.0/0"]
   }
 }
 

@@ -7,3 +7,8 @@ variable "subnet_ids" {
   type        = list(string)
       
 }
+
+variable "cluster_role_name" {  
+  description = "The name of the IAM role to be used by the EKS cluster"
+  type        = string
+}
