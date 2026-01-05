@@ -91,7 +91,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 465
     to_port     = 465
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # SMTP
@@ -100,7 +100,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 25
     to_port     = 25
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # SMTP Submission
@@ -109,7 +109,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 587
     to_port     = 587
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # MongoDB
@@ -118,7 +118,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 27017
     to_port     = 27017
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # Custom TCP 6443 (K8s API / custom app)
@@ -127,7 +127,7 @@ resource "aws_security_group" "app_sg" {
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["223.237.8.75/32"]
   }
 
   # Custom TCP Range

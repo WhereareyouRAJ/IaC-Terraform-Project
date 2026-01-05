@@ -9,6 +9,7 @@ resource "aws_instance" "sonar" {
   root_block_device {
     volume_size = var.volume_size
     volume_type = "gp3"
+    encrypted  = true
   
   }
   monitoring = true
