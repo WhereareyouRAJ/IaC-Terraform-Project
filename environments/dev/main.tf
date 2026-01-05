@@ -150,6 +150,8 @@ resource "aws_security_group" "app_sg" {
 
   tags = {
     Name = "app-sg"
+    Environment = "Dev"
+    Service = "application-server"
   }
 }
 
@@ -170,6 +172,12 @@ resource "aws_default_security_group" "default" {
    to_port     = 0
     protocol    = "-1"
    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "default-sg"
+    Environment = "Dev"
+    Service = "security-group"
   }
 }
 

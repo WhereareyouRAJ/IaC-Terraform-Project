@@ -20,6 +20,8 @@ resource "aws_instance" "sonar" {
  }
   tags = {
     Name = "sonar-server"
+    Environment = "Dev"
+    Service = "EC2"
   }
 }
 
