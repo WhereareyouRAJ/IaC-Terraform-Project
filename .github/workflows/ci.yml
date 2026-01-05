@@ -220,14 +220,17 @@ jobs:
 
     - name: Post cost estimate on PR
       if: github.event_name == 'pull_request'
-      run: |
-          body="#### Infracost Estimate
-          \`\`\`
-          $(cat environments/dev/cost-estimate.txt)
-          \`\`\`"
-
-          echo "comment=${body}" >> $GITHUB_OUTPUT
       id: cost_estimate
+      run: |
+        {
+         echo "comment<<EOF"
+         echo "#### Infracost Estimate"
+         echo ""
+         echo "```"
+         cat environments/dev/cost-estimate.txt
+         echo "```"
+         echo "EOF"
+         } >> $GITHUB_OUTPUT
 
     - name: Add PR comment
       if: github.event_name == 'pull_request'
@@ -241,4 +244,4 @@ jobs:
             repo: context.repo.repo,
             body: body
           });
-  
+      
