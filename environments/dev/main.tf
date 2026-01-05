@@ -45,7 +45,7 @@ module "server" {
   source             = "../../modules/ec2"
   instance_name      = "server"
   ami_id             = data.aws_ami.ubuntu.id
-  instance_type      = "t2.medium"
+  instance_type      = "t3.medium"
   key_name           = "YCamp-key"
   security_group_ids = [aws_security_group.app_sg.id]
   volume_size        = 20
