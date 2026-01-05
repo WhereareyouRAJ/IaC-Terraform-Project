@@ -95,6 +95,11 @@ resource "aws_launch_template" "eks_nodes_lt" {
       Service     = "EKS"
     }
   }
+
+  tags = {
+    Environment = "Dev"
+    Service  = "eks"
+  }
   metadata_options {
     http_tokens = "required"
   }
