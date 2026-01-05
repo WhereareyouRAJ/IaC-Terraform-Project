@@ -77,16 +77,29 @@ resource "aws_launch_template" "eks_nodes_lt" {
       encrypted             = true
     }
   }
+  
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name        = "eks-node"
+      Environment = "Dev"
+      Service     = "EKS"
+    }
+  }
 
+  tag_specifications {
+    resource_type = "volume"
+    tags = {
+      Name        = "eks-node-root"
+      Environment = "Dev"
+      Service     = "EKS"
+    }
+  }
   metadata_options {
     http_tokens = "required"
   }
 
-  tags = {
-    Name = "storage-for-nodes"
-    Environment = "Dev"
-    Service = "volume"
-  }
+
   
 }
 
