@@ -12,6 +12,8 @@ on:
       - staging
       - main
       - infracost_1
+      - infra
+      
   pull_request:
     branches:
       - dev
