@@ -24,6 +24,12 @@ resource "aws_eks_cluster" "eks_1" {
   depends_on = [
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
   ]
+
+  tags = {
+    Name = "eks-cluster"
+    Environment = "Dev"
+    Service = "EKS cluster"
+  }
 }
 
 resource "aws_iam_role" "cluster" {
@@ -43,6 +49,12 @@ resource "aws_iam_role" "cluster" {
       },
     ]
   })
+
+  tags = {
+    Name = "eks-cluster-role"
+    Environment = "Dev"
+    Service = "IAM role"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
@@ -69,6 +81,13 @@ resource "aws_launch_template" "eks_nodes_lt" {
   metadata_options {
     http_tokens = "required"
   }
+
+  tags = {
+    Name = "storage-for-nodes"
+    Environment = "Dev"
+    Service = "volume"
+  }
+
 }
 
 
@@ -104,6 +123,12 @@ resource "aws_eks_node_group" "eks_1_nodes" {
     aws_iam_role_policy_attachment.example-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.example-AmazonEC2ContainerRegistryReadOnly,
   ]
+
+  tags = {
+    Name = "eks-node-group"
+    Environment = "Dev"
+    Service = "EKS-nodes"
+  }
 }
 
 resource "aws_iam_role" "nodegroup_role" {
@@ -119,6 +144,12 @@ resource "aws_iam_role" "nodegroup_role" {
     }]
     Version = "2012-10-17"
   })
+
+  tags = {
+    Name = "eks-nodegroup-role"
+    Environment = "Dev"
+    Service = "EKS-nodes"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "example-AmazonEKSWorkerNodePolicy" {
@@ -217,6 +248,12 @@ resource "aws_kms_key" "eks_secrets" {
       }
     ]
   })
+
+  tags = {
+    Name = "eks-secrets-kms-key"
+    Environment = "Dev"
+    Service = "EKS"
+  }
 }
 
 
@@ -245,4 +282,5 @@ resource "aws_iam_role_policy" "eks_kms_access" {
       }
     ]
   })
+
 }

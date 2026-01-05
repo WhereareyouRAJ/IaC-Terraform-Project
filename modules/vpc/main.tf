@@ -7,8 +7,11 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = "ArgoCD-VPC"
+    Name = "ArgoCD"
+    Environment = "Dev"
+    Service = "vpc"
   }
+
 
 }
 
@@ -20,7 +23,9 @@ resource "aws_subnet" "subnet_1" {
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "Subnet-1"
+    Name = "Subnet-2"
+    Environment = "Dev"
+    Service = "vpc subnets"
   }
 }
 
@@ -32,6 +37,8 @@ resource "aws_subnet" "subnet_2" {
 
   tags = {
     Name = "Subnet-2"
+    Environment = "Dev"
+    Service = "vpc subnets"
   }
 }
 
@@ -40,6 +47,8 @@ resource "aws_internet_gateway" "gw" {
 
   tags = {
     Name = "main"
+    Environment = "Dev"
+    Service = "igw"
   }
 }
 
@@ -53,6 +62,8 @@ resource "aws_route_table" "argo_route_table" {
 
   tags = {
     Name = "argo-route-table"
+    Environment = "Dev"
+    Service = "Route table"
   }
 }
 
@@ -85,17 +96,31 @@ resource "aws_kms_key" "cw_logs" {
       }
     ]
   })
+
+  tags = {
+    Name = "kms_key"
+    Environment = "Dev"
+    Service = "KMS"
+  }
 }
 
 resource "aws_kms_alias" "cw_logs" {
   name          = "alias/cw-vpc-flow-logs"
   target_key_id = aws_kms_key.cw_logs.id
+
+  
 }
 
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/flow-logs"
   retention_in_days = 365
   kms_key_id        = aws_kms_key.cw_logs.arn 
+
+  tags = {
+    Name = "log group"
+    Environment = "Dev"
+    Service = "Cloudwatch logs"
+  }
 }
 
 resource "aws_iam_role" "vpc_flow_logs_role" {
@@ -111,6 +136,12 @@ resource "aws_iam_role" "vpc_flow_logs_role" {
       Action = "sts:AssumeRole"
     }]
   })
+
+  tags = {
+    Name = "Role for flow logs"
+    Environment = "Dev"
+    Service = "IAM role"
+  }
 }
 
 resource "aws_iam_role_policy" "vpc_flow_logs_policy" {
@@ -135,7 +166,14 @@ resource "aws_flow_log" "vpc_flow_logs" {
   log_destination_type = "cloud-watch-logs"
   log_destination       = aws_cloudwatch_log_group.vpc_flow_logs.arn
   iam_role_arn         = aws_iam_role.vpc_flow_logs_role.arn
+
+  tags = {
+    Name = "flow logs"
+    Environment = "Dev"
+    Service = "VPC-flow-logs"
+  }
 }
+
 
 
 
