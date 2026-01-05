@@ -50,6 +50,27 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
   role       = aws_iam_role.cluster.name
 }
 
+resource "aws_launch_template" "eks_nodes_lt" {
+  name_prefix = "eks-gp3-"
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+
+    ebs {
+      volume_size           = 30        # GB (as per need)
+      volume_type           = "gp3"
+      iops                  = 3000      # optional (default 3000)
+      throughput            = 125       # optional (default 125)
+      delete_on_termination = true
+      encrypted             = true
+    }
+  }
+
+  metadata_options {
+    http_tokens = "required"
+  }
+}
+
 
 
 resource "aws_eks_node_group" "eks_1_nodes" {
@@ -64,6 +85,11 @@ resource "aws_eks_node_group" "eks_1_nodes" {
     min_size     = 1
   }
   instance_types = ["t2g.medium"]
+
+  launch_template {
+    id      = aws_launch_template.eks_nodes_lt.id
+    version = "$Latest"
+  }
    
   update_config {
     max_unavailable = 1
