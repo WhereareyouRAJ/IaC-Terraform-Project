@@ -13,7 +13,7 @@ on:
       - main
       - infracost_1
       - infra
-      
+
   pull_request:
     branches:
       - dev
@@ -217,4 +217,28 @@ jobs:
     
     - name: Output cost estimate
       run: cat environments/dev/cost-estimate.txt
+
+    - name: Post cost estimate on PR
+      if: github.event_name == 'pull_request'
+      run: |
+          body="#### Infracost Estimate
+          \`\`\`
+          $(cat environments/dev/cost-estimate.txt)
+          \`\`\`"
+
+          echo "comment=${body}" >> $GITHUB_OUTPUT
+      id: cost_estimate
+
+    - name: Add PR comment
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const body = `${{ steps.cost_estimate.outputs.comment }}`;
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          });
   
