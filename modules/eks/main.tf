@@ -82,14 +82,12 @@ resource "aws_launch_template" "eks_nodes_lt" {
     http_tokens = "required"
   }
 
-  tag_specifications  {
-    resource_type = "volume"
-    tags = {
+  tags = {
     Name = "storage-for-nodes"
     Environment = "Dev"
     Service = "volume"
   }
-  }
+  
 }
 
 
