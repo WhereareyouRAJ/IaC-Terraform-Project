@@ -3,6 +3,8 @@ name: terraform-ci
 permissions:
   contents: read
   security-events: write
+  pull-requests: write
+  issues: write
 
 
 on: 
@@ -214,6 +216,7 @@ jobs:
         infracost breakdown --path . \
           --format table \
           --out-file cost-estimate.txt
+        
     
     - name: Output cost estimate
       run: cat environments/dev/cost-estimate.txt
