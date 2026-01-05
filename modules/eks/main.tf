@@ -126,6 +126,11 @@ resource "aws_security_group" "node_sg" {
     protocol    = "-1"
     cidr_blocks = ["223.237.8.75/32"]
   }
+  tags = {
+    Name = "eks-cluster-sg"
+    Environment = "Dev"
+    Service = "EKS-nodes"
+  }
 }
 
 resource "aws_security_group" "cluster_sg" {
@@ -137,6 +142,11 @@ resource "aws_security_group" "cluster_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["223.237.8.75/32"]
+  }
+  tags = {
+    Name = "eks-cluster-sg"
+    Environment = "Dev"
+    Service = "EKS"
   }
 }
 
