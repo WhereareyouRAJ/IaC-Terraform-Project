@@ -3,7 +3,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu-pro-server/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-pro-server-*"]
+    values = ["ubuntu-minimal/images/hvm-ssd-gp3/ubuntu-plucky-25.04-arm64-minimal-20250606*"]
   }
 
   filter {
@@ -34,7 +34,7 @@ module "sonar" {
   source             = "../../modules/ec2"
   instance_name      = "sonar"
   ami_id             = data.aws_ami.ubuntu.id
-  instance_type      = "t3.large"
+  instance_type      = "t4g.large"
   key_name           = "YCamp-key"
   security_group_ids = [aws_security_group.app_sg.id]
   volume_size        = 30
@@ -45,7 +45,7 @@ module "server" {
   source             = "../../modules/ec2"
   instance_name      = "server"
   ami_id             = data.aws_ami.ubuntu.id
-  instance_type      = "t2.medium"
+  instance_type      = "t4g.medium"
   key_name           = "YCamp-key"
   security_group_ids = [aws_security_group.app_sg.id]
   volume_size        = 20
