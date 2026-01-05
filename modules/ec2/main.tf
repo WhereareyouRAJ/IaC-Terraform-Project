@@ -10,6 +10,11 @@ resource "aws_instance" "sonar" {
     volume_size = var.volume_size
     volume_type = "gp3"
     encrypted  = true
+
+    tags = {
+        Environment = "Dev"
+        Service = "ebs"
+    }
   
   }
   monitoring = true
