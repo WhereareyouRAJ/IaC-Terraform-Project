@@ -63,7 +63,7 @@ resource "aws_eks_node_group" "eks_1_nodes" {
     max_size     = 2
     min_size     = 1
   }
-  instance_types = ["t2.medium"]
+  instance_types = ["t4g.medium"]
    
   update_config {
     max_unavailable = 1
