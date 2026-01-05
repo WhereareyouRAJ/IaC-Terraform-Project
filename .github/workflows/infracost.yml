@@ -31,6 +31,7 @@ jobs:
        
       - name: Generate Infracost cost estimate baseline
         run: |
+          cd environments/dev
           infracost breakdown --path=. \
                               --format=json \
                               --out-file=/tmp/infracost-base.json
@@ -42,6 +43,7 @@ jobs:
       # Generate an Infracost diff and save it to a JSON file.
       - name: Generate Infracost diff
         run: |
+          cd environments/dev
           infracost diff --path=. \
                           --format=json \
                            --compare-to=/tmp/infracost-base.json \
@@ -72,6 +74,7 @@ jobs:
 
       - name: Run Infracost on default branch and update Infracost Cloud
         run: |
+          cd environments/dev
           infracost breakdown --path=. \
                     --format=json \
                     --out-file=infracost.json
