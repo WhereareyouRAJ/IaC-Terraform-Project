@@ -1,4 +1,4 @@
-resource "aws_instance" "sonar" {
+resource "aws_instance" "Demo" {
   ami           = var.ami_id
   instance_type = var.instance_type
   ebs_optimized = true
